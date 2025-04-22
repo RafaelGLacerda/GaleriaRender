@@ -1,4 +1,3 @@
-
 const videoList = document.getElementById("video-list");
 const searchInput = document.getElementById("search");
 const uploadForm = document.getElementById("upload-form");

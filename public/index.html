@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Armazenamento de Vídeos</title>
-  <link rel="stylesheet" href="style.css"/>
+  <title>Galeria de Vídeos</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Armazenamento de Vídeos</h1>
-    <input type="text" id="videoName" placeholder="Nome do vídeo" />
-    <input type="file" id="videoFile" accept="video/*" />
-    <button onclick="uploadVideo()">Enviar vídeo</button>
+    <h1>Galeria de Vídeos</h1>
 
-    <div class="search">
-      <input type="text" id="searchInput" placeholder="Pesquisar vídeo..." oninput="loadVideos()" />
-    </div>
+    <form id="upload-form">
+      <input type="text" name="videoName" id="videoName" placeholder="Nome do vídeo" required />
+      <input type="file" name="video" accept="video/*" required />
+      <button type="submit">Enviar Vídeo</button>
+    </form>
 
-    <div id="videoList"></div>
+    <input type="text" id="search" placeholder="Buscar vídeo por nome..." />
+
+    <div id="video-list"></div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>

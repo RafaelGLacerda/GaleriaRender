@@ -1,59 +1,39 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware para arquivos estáticos
-app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+// Pasta de uploads
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
 
-// Configurando upload com multer
+// Configura multer para salvar vídeos
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
+  destination: (req, file, cb) => cb(null, 'uploads'),
+  filename: (req, file, cb) => cb(null, file.originalname),
 });
-
 const upload = multer({ storage });
 
+// Middleware
+app.use(express.static('public'));
+app.use('/videos', express.static('uploads'));
 app.use(express.json());
 
+// Upload de vídeo
 app.post('/upload', upload.single('video'), (req, res) => {
-  const videoName = req.body.name;
-  const filePath = `/uploads/${req.file.filename}`;
-
-  const metadata = {
-    name: videoName,
-    path: filePath
-  };
-
-  const dataPath = path.join(__dirname, 'uploads', 'videos.json');
-  let videos = [];
-
-  if (fs.existsSync(dataPath)) {
-    videos = JSON.parse(fs.readFileSync(dataPath));
-  }
-
-  videos.push(metadata);
-  fs.writeFileSync(dataPath, JSON.stringify(videos, null, 2));
-
-  res.json({ success: true, video: metadata });
+  res.json({ message: 'Upload feito com sucesso!' });
 });
 
-app.get('/videos', (req, res) => {
-  const dataPath = path.join(__dirname, 'uploads', 'videos.json');
-  if (fs.existsSync(dataPath)) {
-    const videos = JSON.parse(fs.readFileSync(dataPath));
+// Listagem de vídeos
+app.get('/api/videos', (req, res) => {
+  fs.readdir(UPLOADS_DIR, (err, files) => {
+    if (err) return res.status(500).json({ error: 'Erro ao listar vídeos' });
+    const videos = files.filter(f => /\.(mp4|webm|ogg)$/i.test(f));
     res.json(videos);
-  } else {
-    res.json([]);
-  }
+  });
 });
 
 app.listen(PORT, () => {
